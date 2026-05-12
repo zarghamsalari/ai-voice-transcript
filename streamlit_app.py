@@ -6,6 +6,7 @@ other Python web host. File upload only -- a server cannot capture audio
 from the visitor's microphone.
 """
 
+import os
 import tempfile
 from pathlib import Path
 
@@ -24,7 +25,12 @@ LANGUAGES: list[tuple[str, str | None]] = [
     ("Hindi", "hi"),
     ("Chinese", "zh"),
 ]
-MODELS = ["tiny", "base", "small", "medium", "large-v3"]
+# On low-memory hosts (e.g. Render free tier with 512 MB RAM), only the tiny
+# model fits. Set CLOUD_TIER=free as an env var on the host to restrict choices.
+if os.environ.get("CLOUD_TIER") == "free":
+    MODELS = ["tiny"]
+else:
+    MODELS = ["tiny", "base", "small", "medium", "large-v3"]
 
 
 @st.cache_resource(show_spinner=False)
