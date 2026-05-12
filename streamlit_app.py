@@ -105,7 +105,7 @@ def main() -> None:
         else:
             lines.append(text)
         display = "\n".join(lines) if include_ts else " ".join(lines)
-        live_box.text_area("Transcript", value=display, height=380, key="live")
+        live_box.text_area("Transcript", value=display, height=380)
         progress.progress(min(seg.end / duration, 1.0))
 
     progress.progress(1.0)
