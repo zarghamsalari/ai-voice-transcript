@@ -1,0 +1,8 @@
+# Additional packages needed only for the desktop GUI and CLI mic recording.
+# Cloud deployments do not need these (a server has no microphone).
+# Install with:  pip install -r requirements-desktop.txt
+-r requirements.txt
+sounddevice>=0.5.0
+numpy>=1.26.0
+scipy>=1.13.0
+tkinterdnd2>=0.4.0

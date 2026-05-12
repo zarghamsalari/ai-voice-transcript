@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Local outputs -- may contain personal/sensitive audio or transcripts
+recordings/*
+transcripts/*
+!recordings/.gitkeep
+!transcripts/.gitkeep
+
+# Whisper model cache (only created locally; not part of source)
+.cache/
+
+# Environment / secrets
+.env
+.env.local
+*.key
