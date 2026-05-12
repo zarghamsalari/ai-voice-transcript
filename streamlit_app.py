@@ -141,10 +141,28 @@ def main() -> None:
         recorded = st.audio_input("Record from your microphone")
         if recorded is not None:
             audio_bytes = recorded.getvalue()
-            audio_name = f"recording_{datetime.now().strftime('%Y%m%d_%H%M%S')}.wav"
+            # Lock in a stable filename when a new recording arrives (detected by size
+            # changing), so the download filename doesn't change on every UI rerun.
+            if st.session_state.get("recording_size") != recorded.size:
+                st.session_state.recording_size = recorded.size
+                st.session_state.recording_name = (
+                    f"recording_{datetime.now().strftime('%Y%m%d_%H%M%S')}.wav"
+                )
+            audio_name = st.session_state.recording_name
             audio_suffix = ".wav"
             kb = len(audio_bytes) / 1024
             st.write(f"**Recording captured** -- {kb:.1f} KB")
+            st.warning(
+                "Save the audio first if you want to keep the original recording. "
+                "Browser recordings are lost if the tab closes."
+            )
+            st.download_button(
+                "Save audio (.wav) before transcribing",
+                data=audio_bytes,
+                file_name=audio_name,
+                mime="application/octet-stream",
+                use_container_width=True,
+            )
 
     if audio_bytes is None:
         st.info("Upload a file or record your voice to begin.")
