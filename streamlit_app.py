@@ -101,6 +101,10 @@ def main() -> None:
 
     if "history" not in st.session_state:
         st.session_state.history = []
+    # Bumping this counter changes widget keys, which resets the file uploader
+    # and audio_input so the user can start a new transcription without refreshing.
+    if "input_generation" not in st.session_state:
+        st.session_state.input_generation = 0
 
     with st.sidebar:
         st.header("Options")
@@ -121,10 +125,12 @@ def main() -> None:
     audio_name: str | None = None
     audio_suffix: str = ".wav"
 
+    gen = st.session_state.input_generation
     with tab_file:
         uploaded = st.file_uploader(
             "Choose an audio or video file",
             type=["wav", "mp3", "m4a", "mp4", "aac", "ogg", "flac", "opus", "webm"],
+            key=f"file_uploader_{gen}",
         )
         if uploaded is not None:
             size_mb = uploaded.size / 1024 / 1024
@@ -138,7 +144,10 @@ def main() -> None:
             "Tap the microphone below, allow browser access, "
             "speak, then tap stop. Works on iPhone Safari too."
         )
-        recorded = st.audio_input("Record from your microphone")
+        recorded = st.audio_input(
+            "Record from your microphone",
+            key=f"audio_input_{gen}",
+        )
         if recorded is not None:
             audio_bytes = recorded.getvalue()
             # Lock in a stable filename when a new recording arrives (detected by size
@@ -236,6 +245,17 @@ def main() -> None:
         "On iPhone: tap Download -> 'Save to Files'. "
         "Or tap the copy icon at the top-right of the transcript above."
     )
+
+    st.markdown("---")
+    if st.button(
+        "Start a new transcription (clear current file/recording)",
+        use_container_width=True,
+    ):
+        st.session_state.input_generation += 1
+        # Drop any cached recording metadata so the next recording gets a fresh name.
+        st.session_state.pop("recording_size", None)
+        st.session_state.pop("recording_name", None)
+        st.rerun()
 
 
 if __name__ == "__main__":
